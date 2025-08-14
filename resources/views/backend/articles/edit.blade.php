@@ -36,7 +36,7 @@
                                             </div>
                                             <div class="col-md-6 form-group">
                                                 <label>Category *</label>
-                                                <select name="category_id" class="form-control">
+                                                <select name="category_id" id="category_id" class="form-control">
                                                     <option value="">Select a category</option>
                                                     @foreach($categories as $category)
                                                         <option value="{{ $category->category_id }}" {{ ($articleData->category_id == $category->category_id) ? 'selected' : '' }}>
@@ -52,18 +52,18 @@
                                                 <select name="tag_id" id="tag-select" class="form-control">
                                                     <option value="">Select a tag</option>
                                                     @foreach($tags as $tag)
-                                                        <option value="{{ $tag->tag_id }}" {{ in_array($tag->tag_id, $selectedTagIds) ? 'selected' : '' }}>
+                                                        <option value="{{ $tag->tag_id }}" {{ in_array($tag->tag_id, $articleTags->pluck('tag_id')->toArray()) ? 'selected' : '' }}>
                                                             {{ $tag->tag_name }}
                                                         </option>
                                                     @endforeach
                                                 </select>
                                                 <div id="selected-tags" class="mt-2">
                                                     @foreach($tags as $tag)
-                                                        @if(in_array($tag->tag_id, $selectedTagIds))
+                                                        @if(in_array($tag->tag_id, $articleTags->pluck('tag_id')->toArray()))
                                                             <span class="tag-item" data-tag-id="{{ $tag->tag_id }}">
                                                                 {{ $tag->tag_name }}
                                                                 <button type="button" class="remove-tag" onclick="removeSelectedTag(this, '{{ $tag->tag_id }}')">×</button>
-                                                            </span>
+                                                            </span> 
                                                         @endif
                                                     @endforeach
                                                 </div>
@@ -73,7 +73,7 @@
                                         <div class="row">
                                             <div class="col-md-12 form-group">
                                                 <label>Excerpt</label>
-                                                <textarea name="excerpt" class="form-control" rows="4" placeholder="Enter article excerpt">{{ $articleData->excerpt ?? '' }}</textarea>
+                                                <textarea name="excerpt" id="excerpt" class="form-control" rows="4" placeholder="Enter article excerpt">{{ $articleData->excerpt ?? '' }}</textarea>
                                             </div>
                                         </div>
                                         <div class="row">
@@ -107,18 +107,18 @@
                                                         @foreach($existingImages as $index => $image)
                                                             <tr id="galleryrow_{{ $index }}">
                                                                 <td>
-                                                                    <img src="{{ asset('backend/images/articles/' . $image->source) }}" class="property-images-edit" style="width: 60px">
+                                                                    <img src="{{ asset('public/backend/images/articles/' . $image->source) }}.webp" class="property-images-edit" style="width: 60px">
                                                                 </td>
                                                                 <td>
-                                                                    <input type="hidden" name="multimedia_gallery[][filename]" value="{{ $image->source }}" data-id="{{ $image->image_id }}">
+                                                                    <input type="hidden" name="multimedia_gallery[{{ $index }}][filename]" value="{{ $image->source }}" data-id="{{ $image->image_id }}">
                                                                     Image 
                                                                     <div class="form-group">
-                                                                        <label for="multimedia_gallery[][file_alternative_text]">Alternative text</label>
-                                                                        <input type="text" name="multimedia_gallery[][file_alternative_text]" class="form-control" value="{{ $image->alt_text ?? 'Article Image' }}">
+                                                                        <label for="multimedia_gallery[{{ $index }}][file_alternative_text]">Alternative text</label>
+                                                                        <input type="text" name="multimedia_gallery[{{ $index }}][file_alternative_text]" class="form-control" value="{{ $image->alt_text ?? 'Article Image' }}">
                                                                     </div>
                                                                 </td>
                                                                 <td class="align-content: middle">
-                                                                    <button type="button" class="btn btn-custom deleteRow" data-type="image">
+                                                                    <button type="button" class="btn btn-custom deleteRow" data-type="image" data-row="{{ $index }}">
                                                                         <i class="fa fa-trash-o"></i>
                                                                     </button>
                                                                 </td>

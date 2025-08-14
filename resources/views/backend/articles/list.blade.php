@@ -97,6 +97,8 @@
 
                                             <th>Excerpt</th>
 
+                                            <th>Category</th>
+
                                             <th class="text-right">Actions</th>
 
                                         </tr>
@@ -114,7 +116,7 @@
 
                                                 <td>{{ $article->excerpt }}</td>
 
-                                       
+                                                <td>{{ $article->category_name }}</td>
 
                                                
                                                 <td class="text-right">

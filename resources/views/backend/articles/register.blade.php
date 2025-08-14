@@ -36,7 +36,7 @@
                                             </div>
                                             <div class="col-md-6 form-group">
                                                 <label>Category *</label>
-                                                <select name="category_id" class="form-control">
+                                                <select name="category_id" id="category_id" class="form-control">
                                                     <option value="">Select a category</option>
                                                     @foreach($categories as $category)
                                                         <option value="{{ $category->category_id }}">{{ $category->category_name }}</option>
@@ -63,13 +63,13 @@
                                         <div class="row">
                                             <div class="col-md-12 form-group">
                                                 <label>Excerpt</label>
-                                                <textarea name="excerpt" class="form-control" rows="4" placeholder="Enter article excerpt"></textarea>
+                                                <textarea name="excerpt" id="excerpt" class="form-control" rows="4" placeholder="Enter article excerpt"></textarea>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12 form-group">
                                                 <label>Body *</label>
-                                                <textarea name="body" id="article-body" class="form-control"></textarea>
+                                                <textarea name="body" id="body" class="form-control"></textarea>
                                             </div>
                                         </div>
                                         <div class="row row-title-div">
@@ -131,8 +131,8 @@
                                         <div class="col-md-12 col-xs-12">
                                             <div class="text-right mrg-top-5">
                                                 <a class="btn btn-custom btn-rounded mb-30" href="{{ route('articles-list') }}">Cancel</a>
-                                                <button type="submit" class="btn btn-custom btn-rounded mb-30 user-registration-button" data-saving-type="1">Save and keep editing</button>
-                                                <button type="submit" class="btn btn-custom btn-rounded mb-30 user-registration-button" data-saving-type="2">Save</button>
+                                                <button type="submit" class="btn btn-custom btn-rounded mb-30 article-registration-button" data-saving-type="1">Save and keep editing</button>
+                                                <button type="submit" class="btn btn-custom btn-rounded mb-30 article-registration-button" data-saving-type="2">Save</button>
                                             </div>
                                         </div>
                                     </div>
