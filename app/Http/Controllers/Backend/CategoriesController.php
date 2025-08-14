@@ -118,10 +118,11 @@ class CategoriesController extends Controller {
             'meta_title.required' => 'Meta title is required',
             'url_slug.required' => 'URL slug is required',
             'meta_description.required' => 'Meta description is required',
+            'category_name.unique' => 'Category name already exists',
         ];
 
         $validations = $request->validate([
-            'category_name' => 'required|max:100|min:3',
+            'category_name' => 'required|max:100|min:3|unique:ssy_categories,category_name',
             'meta_title' => 'required',
             'url_slug' => 'required',
             'meta_description' => 'required'
@@ -159,10 +160,11 @@ class CategoriesController extends Controller {
             'meta_title.required' => 'Meta title is required',
             'url_slug.required' => 'URL slug is required',
             'meta_description.required' => 'Meta description is required',
+            'category_name.unique' => 'Category name already exists',
         ];
 
         $validations = $request->validate([
-            'category_name' => 'required|max:100|min:3',
+            'category_name' => 'required|max:100|min:3|unique:ssy_categories,category_name,' . $categoryId,
             'meta_title' => 'required',
             'url_slug' => 'required',
             'meta_description' => 'required'

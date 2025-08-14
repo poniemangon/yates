@@ -254,9 +254,9 @@ Dropzone.on('addedfile', function(file) {
 
         swal({
 
-            title: 'Alerta', 
+            title: 'Warning', 
 
-            text: 'Ha alcanzado el límite de items en la galería multimedia', 
+            text: 'You have reached the limit of items in the multimedia gallery', 
 
             type: 'warning'
 
@@ -312,9 +312,9 @@ function updateMultimediaTable(file, fileSrc, type, existingImageId = null, exis
 
                 // If this is an existing image, add data-id and use existing alt_text
                 if (existingImageId) {
-                    html += '<td><input type="hidden" name="multimedia_gallery['+rowN+'][filename]" value="'+file.name+'" data-id="'+existingImageId+'"/>Imagen <div class="form-group"><label for="multimedia_gallery['+rowN+'][file_alternative_text]">Texto alternativo</label><input type="text" name="multimedia_gallery['+rowN+'][file_alternative_text]"  class="form-control" value="'+(existingAltText || 'El Hondo')+'"></div></td>';
+                    html += '<td><input type="hidden" name="multimedia_gallery['+rowN+'][filename]" value="'+file.name+'" data-id="'+existingImageId+'"/>Image <div class="form-group"><label for="multimedia_gallery['+rowN+'][file_alternative_text]">Alternative text</label><input type="text" name="multimedia_gallery['+rowN+'][file_alternative_text]"  class="form-control" value="'+(existingAltText || 'Article Image')+'"></div></td>';
                 } else {
-                    html += '<td><input type="hidden" name="multimedia_gallery['+rowN+'][filename]" value="'+file.name+'"/>Imagen <div class="form-group"><label for="multimedia_gallery['+rowN+'][file_alternative_text]">Texto alternativo</label><input type="text" name="multimedia_gallery['+rowN+'][file_alternative_text]"  class="form-control" value="El Hondo"></div></td>';
+                    html += '<td><input type="hidden" name="multimedia_gallery['+rowN+'][filename]" value="'+file.name+'"/>Image <div class="form-group"><label for="multimedia_gallery['+rowN+'][file_alternative_text]">Alternative text</label><input type="text" name="multimedia_gallery['+rowN+'][file_alternative_text]"  class="form-control" value="Article Image"></div></td>';
                 }
 
                 html += '<td class="align-content: middle"><button type="button" class="btn btn-custom deleteRow" data-type="image" data-row="'+rowN+'"><i class="fa fa-trash-o"></i></button></td>';
@@ -348,9 +348,9 @@ function updateMultimediaTable(file, fileSrc, type, existingImageId = null, exis
 
         swal({
 
-            title: 'Alerta', 
+            title: 'Warning', 
 
-            text: 'Ha alcanzado el límite de items en la galería multimedia', 
+            text: 'You have reached the limit of items in the multimedia gallery', 
 
             type: 'warning'
 

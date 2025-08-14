@@ -18,7 +18,7 @@
                             <div class="col-md-12 ml-auto mr-auto">
                                 <form method="post" action="{{ route('edit-article', ['articleId' => $articleData->article_id]) }}" id="article-edition-form">
                                     @csrf
-                                    <div class="spanish-content">
+                                    <div class="content">
                                         <div class="row row-title-div mb-0">
                                             <div class="col-md-12">
                                                 <h3 class="heading-title mb-0"><i>* Required information</i></h3>

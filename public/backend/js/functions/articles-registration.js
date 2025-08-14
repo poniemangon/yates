@@ -261,9 +261,9 @@ Dropzone.on('addedfile', function(file) {
 
         swal({
 
-            title: 'Alerta', 
+            title: 'Warning', 
 
-            text: 'Ha alcanzado el límite de items en la galería multimedia', 
+            text: 'You have reached the limit of items in the multimedia gallery', 
 
             type: 'warning'
 
@@ -317,7 +317,7 @@ function updateMultimediaTable(file, fileSrc, type) {
 
                 html += '<td><img src="'+fileSrc+'" class="property-images-edit" style="width: 60px"></td>';
 
-                html += '<td><input type="hidden" name="multimedia_gallery['+rowN+'][filename]" value="'+file.name+'"/>Imagen <div class="form-group"><label for="multimedia_gallery['+rowN+'][file_alternative_text]">Texto alternativo</label><input type="text" name="multimedia_gallery['+rowN+'][file_alternative_text]"  class="form-control" value="El Hondo"></div></td>';
+                                    html += '<td><input type="hidden" name="multimedia_gallery['+rowN+'][filename]" value="'+file.name+'"/>Image <div class="form-group"><label for="multimedia_gallery['+rowN+'][file_alternative_text]">Alternative text</label><input type="text" name="multimedia_gallery['+rowN+'][file_alternative_text]"  class="form-control" value="Article Image"></div></td>';
 
                 html += '<td class="align-content: middle"><button type="button" class="btn btn-custom deleteRow" data-type="image" data-row="'+rowN+'"><i class="fa fa-trash-o"></i></button></td>';
 
@@ -351,7 +351,7 @@ function updateMultimediaTable(file, fileSrc, type) {
 
             html += '<input type="hidden" name="multimedia_gallery['+rowN+'][tmp_name]" value="'+fileSrc.code+'">';
 
-            html += '<td><input type="hidden" name="multimedia_gallery['+rowN+'][filename]" value="'+fileSrc.thumbnail+'"/>Video <div class="form-group"><label for="multimedia_gallery['+rowN+'][file_alternative_text]">Texto alternativo</label><input type="text" name="multimedia_gallery['+rowN+'][file_alternative_text]"  class="form-control" value="El Hondo"></div></td>';
+            html += '<td><input type="hidden" name="multimedia_gallery['+rowN+'][filename]" value="'+fileSrc.thumbnail+'"/>Video <div class="form-group"><label for="multimedia_gallery['+rowN+'][file_alternative_text]">Alternative text</label><input type="text" name="multimedia_gallery['+rowN+'][file_alternative_text]"  class="form-control" value="Article Video"></div></td>';
 
             html += '<input type="hidden" name="multimedia_gallery['+rowN+'][code]" value="'+fileSrc.clear_code+'" data-video-type="'+fileSrc.video_type+'">';
 
@@ -383,9 +383,9 @@ function updateMultimediaTable(file, fileSrc, type) {
 
         swal({
 
-            title: 'Alerta', 
+            title: 'Warning', 
 
-            text: 'Ha alcanzado el límite de items en la galería multimedia', 
+            text: 'You have reached the limit of items in the multimedia gallery', 
 
             type: 'warning'
 

@@ -38,6 +38,15 @@
 
 <script src="{{ asset('public/backend/js/ckeditor/ckeditor.js') }}"></script> 
 
+<!-- Global CKEditor configuration -->
+<script type="text/javascript">
+    // Set CKEditor to English globally
+    if (typeof CKEDITOR !== 'undefined') {
+        CKEDITOR.config.language = 'en';
+        CKEDITOR.config.defaultLanguage = 'en';
+    }
+</script>
+
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"></script>

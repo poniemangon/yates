@@ -44,52 +44,91 @@ class ArticlesController extends Controller {
 
         $totalArticles = ArticlesModel::count();
 
-        $articles = collect();
-        $filterSource = false;
-        $filterCategory = false;
+        // Obtener artículos con paginación (20 por página)
+        $articles = ArticlesModel::orderBy('article_id', 'desc')->paginate(20);
 
-        if ($request->has('source') && $request->input('source') != '') {
-            $filterSource = $request->input('source');
-        }
-
-        if ($request->input('category_id') && $request->input('category_id') != '') {
-            $filterCategory = $request->input('category_id');
-        }
-
-        $articles = ArticlesModel::when($filterSource, function($query, $filterSource) {
-            return $query->where('title', 'LIKE', '%'.$filterSource.'%');
-        })->when($filterCategory, function($query, $filterCategory) {
-            return $query->where('category_id', $filterCategory);
-        })->groupBy('article_id')->orderBy('article_id', 'desc');
+        // Agregar información de categoría a cada artículo
         foreach ($articles as $article) {
+            $tagIds = ArticleTagsModel::where('article_id', $article->article_id)->get(); 
+
+            $article->article_tags = TagsModel::whereIn('tag_id', $tagIds->pluck('tag_id'))->get();
+
             $articleCategory = CategoriesModel::where('category_id', $article->category_id)->first();
-            $article->category_name = $articleCategory->category_name;
-            $article->category_slug = $articleCategory->url_slug;
+            if ($articleCategory) {
+                $article->category_name = $articleCategory->category_name;
+                $article->category_slug = $articleCategory->url_slug;
+            } else {
+                $article->category_name = 'No Category';
+                $article->category_slug = '';
+            }
+        }
+
+        // Gather filters from query params
+        $filtersParameters = [
+            'search' => $request->query('search', ''),
+            'category' => $request->query('category', ''),
+            'date_from' => $request->query('date_from', ''),
+            'date_to' => $request->query('date_to', ''),
+            'tags' => $request->query('tags', ''), // single tag like category
+        ];
+
+        // Build query with combined filters
+        $query = ArticlesModel::query();
+
+        // Search across title, excerpt and body
+        if (!empty($filtersParameters['search'])) {
+            $search = $filtersParameters['search'];
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'like', "%$search%");
+                $q->orWhere('excerpt', 'like', "%$search%");
+                $q->orWhere('body', 'like', "%$search%");
+            });
+        }
+
+        // Category filter
+        if (!empty($filtersParameters['category'])) {
+            $query->where('category_id', $filtersParameters['category']);
+        }
+
+        // Date range filters
+        if(!empty($filtersParameters['date_from']) && !empty($filtersParameters['date_to']) && $filtersParameters['date_from'] > $filtersParameters['date_to']) {
+            $filtersParameters['date_to'] = '';
+        } 
+        
+        if (!empty($filtersParameters['date_from'])) {
+            $query->where('publish_date', '>=', $filtersParameters['date_from']);
+        }
+        if (!empty($filtersParameters['date_to'])) {
+            $query->where('publish_date', '<=', $filtersParameters['date_to']);
         }
 
 
-        $articles = $articles->get()->all();
 
-        $currentPage = LengthAwarePaginator::resolveCurrentPage();
-        $perPage = 50;
-        $currentItems = array_slice($articles, $perPage * ($currentPage - 1), $perPage);
-        $paginator = new LengthAwarePaginator($currentItems, count($articles), $perPage, $currentPage);
+        $articles = $query->paginate(20);
 
-        $paginator->setPath(url('/') . '/ssy-administration/articles-list');
-        $articles = $paginator;
+        // Agregar información de categoría a cada artículo
+        foreach ($articles as $article) {
+            $tagIds = ArticleTagsModel::where('article_id', $article->article_id)->get(); 
 
+            $article->article_tags = TagsModel::whereIn('tag_id', $tagIds->pluck('tag_id'))->get();
 
+            $articleCategory = CategoriesModel::where('category_id', $article->category_id)->first();
+            if ($articleCategory) {
+                $article->category_name = $articleCategory->category_name;
+                $article->category_slug = $articleCategory->url_slug;
+            } else {
+                $article->category_name = 'No Category';
+                $article->category_slug = '';
+            }
+        }
 
-        $filtersParameters = array(
-            'source' => $filterSource,
-            'category' => $filterCategory
-        );
+        $categories = CategoriesModel::orderBy('category_name', 'asc')->get();
 
-        $categories = CategoriesModel::orderBy('category_id', 'asc')->get();
+        $tags = TagsModel::orderBy('tag_name', 'asc')->get();
 
         $scripts = array('articles.js');
 
-    	return view('backend.articles.list', compact('title', 'totalArticles', 'articles', 'filtersParameters', 'categories', 'scripts'));
+    	return view('backend.articles.list', compact('title', 'totalArticles', 'articles', 'filtersParameters', 'categories', 'scripts', 'tags'));
     }
 
     public function register() {
@@ -259,15 +298,15 @@ class ArticlesController extends Controller {
         
         // Validate request
         $messages = [
-            'title.required' => 'Debes ingresar el título del artículo',
-            'excerpt.required' => 'Debes ingresar el excerpt del artículo',
-            'body.required' => 'Debes ingresar el contenido del artículo',
-            'meta_title.required' => 'Debes ingresar el meta title para la página del artículo',
-            'meta_description.required' => 'Debes ingresar el meta description para la página del artículo',
-            'url_slug.required' => 'La URL slug para la página del artículo es requerida',
-            'category_id.required' => 'Debes seleccionar una categoría',
-            'url_slug.unique' => 'Ya existe artículo con dicha URL slug registrada',
-            'publish_date.date_format' => 'La fecha de publicación debe estar en formato DD-MM-YYYY'
+            'title.required' => 'You must enter the title of the article',
+            'excerpt.required' => 'You must enter the excerpt of the article',
+            'body.required' => 'You must enter the content of the article',
+            'meta_title.required' => 'You must enter the meta title for the article page',
+            'meta_description.required' => 'You must enter the meta description for the article page',
+            'url_slug.required' => 'The URL slug for the article page is required',
+            'category_id.required' => 'You must select a category',
+            'url_slug.unique' => 'An article with that URL slug already exists',
+            'publish_date.date_format' => 'The publication date must be in DD-MM-YYYY format'
         ];
 
         $validations = $request->validate([
@@ -422,12 +461,10 @@ class ArticlesController extends Controller {
                 
                 foreach ($deletedImages as $deletedImage) {
                     $baseFileName = $deletedImage->source;
-                    $filePath700 = public_path('backend/images/articles/' . $baseFileName . '-700x467.jpg');
-                    $filePath285 = public_path('backend/images/articles/' . $baseFileName . '-285x307.jpg');
+                    $filePath = public_path('backend/images/articles/' . $baseFileName . '.webp');
                     
                     // Delete physical files
-                    if (file_exists($filePath700)) unlink($filePath700);
-                    if (file_exists($filePath285)) unlink($filePath285);
+                    if (file_exists($filePath)) unlink($filePath);
                 }
                 
                 // Delete database records
@@ -442,134 +479,32 @@ class ArticlesController extends Controller {
         ]);
     }
 
-    public function videoAnalyzer(Request $request) {
-        $url = $request->input('url');
+    public function deleteArticle($articleId) { 
 
-        if (!filter_var($url, FILTER_VALIDATE_URL)) {
-            return Response()->json([
+        $article = ArticlesModel::find($articleId);
+        if (!$article) {
+            return response()->json([
                 'success' => false,
-                'message' => 'URL inválida'
-            ]); 
-        } else {
-            try {
-                $dispatcher = new \Embed\Http\CurlDispatcher([
-                    CURLOPT_REFERER => 'https://www.tigrecasas.com.ar',
-                ]);
-
-                $parsed = parse_url($url);
-
-                if ($parsed['host'] === 'www.youtube.com' || $parsed['host'] === 'www.vimeo.com' || $parsed['host'] === 'vimeo.com') {
-
-                    $info = Embed::create($url, null, $dispatcher);
-
-                    $codeUrl = getIframeSource($info->code);
-
-                    if (!empty($codeUrl[0])) {
-                        $link_array = explode('/', $codeUrl[0]);
-                        $c = end($link_array);
-                    } else {
-                        $c = null;
-                    }
-
-                    return Response()->json([
-                        'success' => true,
-                        'thumbnail' => $info->image,
-                        'title' => htmlentities($info->title),
-                        'code' => $info->code,
-                        'clear_code' => $c,
-                        'video_type' => videoType($url)
-                    ]);
-                    
-                } else if ($parsed['host'] === 'www.tiktok.com') {
-
-                    $info = Embed::create($url, null, $dispatcher);
-
-                    $codeUrl = getIframeSource($info->code);
-
-                    return Response()->json([
-                        'success' => true,
-                        'thumbnail' => $info->image,
-                        'title' => htmlentities($info->title),
-                        'code' => $info->code,
-                        'clear_code' => $codeUrl,
-                        'video_type' => 'TikTok'
-                    ]);
-                } else {
-                    return Response()->json([
-                        'success' => false,
-                        'message' => 'La URL introducida es inválida'
-                    ]);
-                }
-
-            } catch (\Embed\Exceptions\InvalidUrlException $exception) {
-                $response = $exception->getMessage();
-
-                return Response()->json([
-                    'success' => false,
-                    'message' => $response
-                ]);
+                'message' => 'Article not found'
+            ], 404);
+        }
+        $articleImages = ArticleImagesModel::where('article_id', $articleId)->get();
+        foreach ($articleImages as $articleImage) {
+            $imagePath = public_path('backend/images/articles/' . $articleImage->source . '.webp');
+            if (file_exists($imagePath)) {
+                unlink($imagePath);
             }
         }
-    }
 
-    public function deleteDestination($destinationId) {
+        $article->delete();
 
-        if (!isset($destinationId)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'El ID del destino no existe'
-            ]);
-        }
+        ArticleTagsModel::where('article_id', $articleId)->delete();
 
-        $destinationData = Destinations::where('destination_id', $destinationId)->first();
-
-        if (!$destinationData) {
-            return response()->json([
-                'success' => false,
-                'message' => 'El destino es inválido o inexistente'
-            ]);
-        }
-
-        Destinations::where('destination_id', $destinationId)->delete();
-        DestinationFiles::where('destination_id', $destinationId)->delete();
 
         return response()->json([
             'success' => true,
-            'message' => 'Destino eliminado con éxito'
+            'message' => 'Article deleted successfully'
         ]);
     }
 
-    public function getDestinationUrlSlug($destinationId, Request $request) {
-        $destination = $request->input('destination');
-        $slug = $this->slugifyDestination($destinationId, $destination);
-
-        return Response()->json([
-            'success' => true,
-            'slug' => $slug
-        ]);
-    }
-
-    public function slugifyDestination($destinationId, $destination) {
-        $slug = Str::slug($destination);
-        $slug = Str::limit($slug, 200);
-
-        $existingSlugs = Destinations::where(function($query) use ($slug) {
-            $query->whereRaw("url_slug = '$slug' or url_slug LIKE '$slug%'");
-        })->when($destinationId, function ($query, $destinationId) {
-            return $query->where('destination_id', '<>', $destinationId);
-        })->get();
-
-        if (!$existingSlugs->contains('url_slug', $slug)) {
-            return $slug;
-        }
-
-        $limit = 1;
-        for ($i = 1; $i <= $limit; $i++) {
-            $newSlug = Str::limit( $slug, 200 - ( strlen( $i ) + 1 ) ) . '-' . $i;
-            if (!$existingSlugs->contains('url_slug', $newSlug)) {
-                return $newSlug;
-            }
-            $limit ++;
-        }
-    }
 }

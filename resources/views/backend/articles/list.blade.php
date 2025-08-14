@@ -10,7 +10,7 @@
 
             <div class="page-title col-md-6">
 
-                <h4 class="section-title">Users <span class="total-section-title-content">(Total registered: {{ $totalArticles }})</span></h4>
+                <h4 class="section-title">Articles <span class="total-section-title-content">(Total registered: {{ $totalArticles }})</span></h4>
 
             </div> 
 
@@ -32,7 +32,7 @@
 
         </div>
 
-        <div class="collapse @if ($filtersParameters['source'] != '') show @endif" id="collapsable-articles-content">
+        <div class="collapse @if ($filtersParameters['search'] != '') show @endif" id="collapsable-articles-content">
 
             <div class="card card-body">
 
@@ -40,23 +40,54 @@
 
                     <div class="row">
                         
-                        <div class="col-lg-6">
-
-                            <label>Search articles by title, description or content</label>
-                            
-                            <input type="text" class="form-control" name="source" autocomplete="off" value="{{ $filtersParameters['source'] }}">
-
+                        <div class="col-lg-4">
+                            <label>Search by title, description or content</label>
+                            <input type="text" class="form-control" name="search" autocomplete="off" value="{{ $filtersParameters['search'] ?? '' }}" placeholder="Enter search term...">
                         </div>
+
+                        <div class="col-lg-3 property-abm">
+                            <label>Category</label>
+                            <select class="form-control" name="category">
+                                <option value="">All Categories</option>
+                                @foreach($categories ?? [] as $category)
+                                    <option value="{{ $category->category_id }}" {{ ($filtersParameters['category'] ?? '') == $category->category_id ? 'selected' : '' }}>
+                                        {{ $category->category_name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="col-lg-3">
+                            <label>Publication Date From</label>
+                            <input type="date" class="form-control" name="date_from" value="{{ $filtersParameters['date_from'] ?? '' }}">
+                        </div>
+
+                        <div class="col-lg-2">
+                            <label>Publication Date To</label>
+                            <input type="date" class="form-control" name="date_to" value="{{ $filtersParameters['date_to'] ?? '' }}">
+                        </div>
+
+                        <!-- <div class="col-lg-3 property-abm">
+                            <label>Tags</label>
+                            <select class="form-control" name="tags">
+                                <option value="">All Tags</option>
+                                @foreach($tags ?? [] as $tag)
+                                    <option value="{{ $tag->tag_id }}" {{ ($filtersParameters['tags'] ?? '') == $tag->tag_id ? 'selected' : '' }}>
+                                        {{ $tag->tag_name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div> -->
 
                     </div>
 
                     <div class="row mt-3">
 
-                        <div class="col-lg-3">
+                        <div class="col-lg-6">
 
                             <button type="submit" class="btn btn-custom btn-sm">Filter</button>
 
-                            <a href="{{ url('/fsc-administration/articles-list') }}" class="btn btn-default btn-sm text-white ml-1">Clean</a>
+                            <a href="{{ url('/ssy-administration/articles-list') }}" class="btn btn-default btn-sm text-white ml-1">Clean</a>
 
                         </div>
 
@@ -99,6 +130,10 @@
 
                                             <th>Category</th>
 
+                                            <th>Tags</th>
+
+                                            <th>Publish Date</th>
+
                                             <th class="text-right">Actions</th>
 
                                         </tr>
@@ -118,7 +153,14 @@
 
                                                 <td>{{ $article->category_name }}</td>
 
-                                               
+                                                <td>
+                                                    @foreach($article->article_tags as $tag)
+                                                        <span class="badge badge-primary">{{ $tag->tag_name }}</span>
+                                                    @endforeach
+                                                </td>
+
+                                                <td>{{ $article->publish_date }}</td>
+
                                                 <td class="text-right">
 
                                                     <a href="{{ route('edit-article', ['articleId' => $article->article_id]) }}"><i class="fa fa-edit" title="Edit" data-toggle="tooltip" data-placement="top"></i></a>
@@ -175,9 +217,15 @@
 
                 @if (count($articles) > 0) 
 
-                    <div class="mt-3 d-flex flex-row justify-content-end custom-paginator">
+                    <div class="mt-3 d-flex flex-row justify-content-between">
 
-                        {{ $articles->appends(request()->input())->links("pagination::bootstrap-4") }}
+                        <p class="text-muted">Showing {{ $articles->firstItem() }} to {{ $articles->lastItem() }} of {{ $articles->total() }} articles</p>
+
+                        <div class="custom-paginator">
+
+                            {{ $articles->appends(request()->input())->links("pagination::bootstrap-4") }}
+
+                        </div>
 
                     </div>
 

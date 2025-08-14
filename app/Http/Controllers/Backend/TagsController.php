@@ -118,10 +118,11 @@ class TagsController extends Controller {
             'meta_title.required' => 'Meta title is required',
             'url_slug.required' => 'URL slug is required',
             'meta_description.required' => 'Meta description is required',
+            'tag_name.unique' => 'Tag name already exists',
         ];
 
         $validations = $request->validate([
-            'tag_name' => 'required|max:100|min:3',
+            'tag_name' => 'required|max:100|min:3|unique:ssy_tags,tag_name',
             'meta_title' => 'required',
             'url_slug' => 'required',
             'meta_description' => 'required'
@@ -159,10 +160,11 @@ class TagsController extends Controller {
             'meta_title.required' => 'Meta title is required',
             'url_slug.required' => 'URL slug is required',
             'meta_description.required' => 'Meta description is required',
+            'tag_name.unique' => 'Tag name already exists',
         ];
 
         $validations = $request->validate([
-            'tag_name' => 'required|max:100|min:3',
+            'tag_name' => 'required|max:100|min:3|unique:ssy_tags,tag_name,' . $tagId,
             'meta_title' => 'required',
             'url_slug' => 'required',
             'meta_description' => 'required'
