@@ -497,17 +497,7 @@ $(document).ready(function() {
             ],
             height: 300,
             removeButtons: 'Image,Flash,Iframe',
-            removePlugins: 'image,iframe',
-            allowedContent: {
-                $1: {
-                    elements: {
-                        img: false,
-                        iframe: false,
-                        embed: false,
-                        object: false
-                    }
-                }
-            }
+            removePlugins: 'image,iframe'
         });
         console.log('CKEditor initialized for body');
     } else {
