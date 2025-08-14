@@ -21,17 +21,14 @@ use App\Models\ArticleTagsModel;
 
 class CategoriesController extends Controller {
 
-    public function login() {
-
- 
-    
-
-        if (Session::has('loggedUser')) {
-            return redirect('ssy-administration/categories-list');
-        }
-    
-        $title = 'Categories | Login | SSY';
-        return view('backend.categories.login', compact('title'));
+    public function __construct() {
+        $this->middleware(function ($request, $next) {
+            if (!Session::has('loggedUser')) {
+                return Redirect('ssy-administration');
+            } else {
+                return $next($request);
+            }
+        });
     }
     
     
@@ -164,7 +161,7 @@ class CategoriesController extends Controller {
         ];
 
         $validations = $request->validate([
-            'category_name' => 'required|max:100|min:3|unique:ssy_categories,category_name,' . $categoryId,
+            'category_name' => 'required|max:100|min:3|unique:ssy_categories,category_name,' . $categoryId . ',category_id',
             'meta_title' => 'required',
             'url_slug' => 'required',
             'meta_description' => 'required'
@@ -218,9 +215,5 @@ class CategoriesController extends Controller {
         ]);
     }
 
-    public function logout() {
-    	auth()->logout();
-        Session::flush();
-        return Redirect('ssy-administration');
-    }
+
 }

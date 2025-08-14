@@ -66,5 +66,5 @@ Route::prefix('ssy-administration')->group(function() {
 	});
 });
 
-Route::get('/', [PageController::class, 'index'])->name('/');
+
 

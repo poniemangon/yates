@@ -86,9 +86,25 @@
                                                 <td class="text-right">
                                                     <a href="{{ route('edit-tag', $tag->tag_id) }}"><i class="fa fa-edit" title="Edit" data-toggle="tooltip" data-placement="top"></i></a>
                                                     |
-                                                    <a href="javascript:void(0)" class="delete-tag-button" data-tag-id="{{ $tag->tag_id }}"><i class="ei-garbage-2" title="Delete" data-toggle="tooltip" data-placement="top"></i></a>
+                                                    <a href="javascript:void(0)" class="open-delete-modal" data-toggle="modal" data-target="#delete-tag-{{ $tag->tag_id }}"><i class="ei-garbage-2" title="Delete" data-toggle="tooltip" data-placement="top"></i></a>
                                                 </td>
                                             </tr>
+                                            
+                                            <!-- Delete Tag Modal -->
+                                            <div class="modal fade" id="delete-tag-{{ $tag->tag_id }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog text-left">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">Are you sure you wish to delete this tag?</div>
+                                                        <div class="modal-body">
+                                                            This action cannot be undone.
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                           <button data-tag-id="{{ $tag->tag_id }}" class="btn btn-custom delete-tag-button">Delete</button>
+                                                           <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                             @endforeach
                                         </tbody>
                                     </table>
@@ -107,42 +123,6 @@
     </div>
 </div>
 
-<style>
-.selected-tags-container {
-    border: 2px solid #ddd;
-    background-color: #f8f9fa;
-    border-radius: 5px;
-    padding: 15px;
-    min-height: 60px;
-    background-color: #e9ecef;
-}
-
-.tag-item {
-    display: inline-block;
-    background-color: #007bff;
-    color: white;
-    padding: 5px 10px;
-    margin: 2px;
-    border-radius: 15px;
-    font-size: 14px;
-    position: relative;
-}
-
-.remove-tag {
-    background: none;
-    border: none;
-    color: white;
-    font-weight: bold;
-    margin-left: 8px;
-    cursor: pointer;
-    font-size: 16px;
-    line-height: 1;
-}
-
-.remove-tag:hover {
-    color: #ffc107;
-}
-</style>
 
 @include('backend.layouts.footer')
 @include('backend.layouts.scripts')

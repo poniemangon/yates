@@ -45,7 +45,7 @@ function registerTag(action, method, data, savingType) {
         success: function(resp) {
             if (resp.success) {
                 swal({
-                    title: 'Mensaje', 
+                title: 'Tag saved successfully', 
                     text: resp.message, 
                     type: 'success'
                 }).then(function() {
@@ -58,7 +58,7 @@ function registerTag(action, method, data, savingType) {
                 });
             } else {
                 swal({
-                    title: 'Ups...', 
+                    title: 'Oops...', 
                     text: resp.message, 
                     type: 'warning'
                 });
@@ -122,7 +122,7 @@ function editTag(action, method, data, savingType) {
         success: function(resp) {
             if (resp.success) {
                 swal({
-                    title: 'Mensaje', 
+                    title: 'Message', 
                     text: resp.message, 
                     type: 'success'
                 }).then(function() {
@@ -135,7 +135,7 @@ function editTag(action, method, data, savingType) {
                 });
             } else {
                 swal({
-                    title: 'Ups...', 
+                    title: 'Oops...', 
                     text: resp.message, 
                     type: 'warning'
                 });
@@ -194,8 +194,10 @@ function deleteTag(action, method) {
         },
         success: function(resp) {
             if (resp.success) {
+                // Close the modal first
+                $('.modal').modal('hide');
                 swal({
-                    title: 'Mensaje', 
+                    title: 'Message', 
                     text: resp.message, 
                     type: 'success'
                 }).then(function() {
@@ -203,7 +205,7 @@ function deleteTag(action, method) {
                 }); 
             } else {
                 swal({
-                    title: 'Ups...', 
+                    title: 'Oops...', 
                     text: resp.message, 
                     type: 'warning'
                 });
@@ -228,8 +230,18 @@ function deleteTag(action, method) {
 }
 
 $(document).on('click', '.delete-tag-button', function() {
-    var tagId = $(this).attr('data-tag-id');
-    var action = url + '/delete-tag/' + tagId;
-    var method = 'delete';
-    deleteTag(action, method);
+    // Check if this is the button inside the modal (has data-tag-id)
+    if ($(this).attr('data-tag-id')) {
+        var tagId = $(this).attr('data-tag-id');
+        var action = url + '/delete-tag/' + tagId;
+        var method = 'delete';
+        deleteTag(action, method);
+    }
+    // If no data-tag-id, it's the icon button that opens the modal - do nothing
+});
+
+// Event handler for the icon that opens the delete modal
+$(document).on('click', '.open-delete-modal', function() {
+    // This just opens the modal, no AJAX needed
+    // Bootstrap handles the modal opening via data-toggle="modal"
 });

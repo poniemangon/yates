@@ -19,6 +19,15 @@ use App\Models\ArticleTagsModel;
 
 
 class TagsController extends Controller {
+    public function __construct() {
+        $this->middleware(function ($request, $next) {
+            if (!Session::has('loggedUser')) {
+                return Redirect('ssy-administration');
+            } else {
+                return $next($request);
+            }
+        });
+    }
 
     public function login() {
 
@@ -164,7 +173,7 @@ class TagsController extends Controller {
         ];
 
         $validations = $request->validate([
-            'tag_name' => 'required|max:100|min:3|unique:ssy_tags,tag_name,' . $tagId,
+            'tag_name' => 'required|max:100|min:3|unique:ssy_tags,tag_name,' . $tagId . ',tag_id',
             'meta_title' => 'required',
             'url_slug' => 'required',
             'meta_description' => 'required'
@@ -211,6 +220,7 @@ class TagsController extends Controller {
 
 
         TagsModel::where('tag_id', $tagId)->delete();
+        ArticleTagsModel::where('tag_id', $tagId)->delete();
 
         return response()->json([
             'success' => true,
@@ -218,9 +228,5 @@ class TagsController extends Controller {
         ]);
     }
 
-    public function logout() {
-    	auth()->logout();
-        Session::flush();
-        return Redirect('ssy-administration');
-    }
+
 }
